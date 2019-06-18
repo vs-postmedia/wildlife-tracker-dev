@@ -1,0 +1,29 @@
+{
+    "records": [
+        {
+            "encounter_id": 103283,
+            "encounter_lat": 59.5666667,
+            "encounter_lng": -133.7,
+            "encounter_date": "2012-09-16T14:00:00.000Z",
+            "encounter_species_id": 12,
+            "encounter_enctype_id": 13,
+            "encounter_group_id": 3,
+            "encounter_outcome_id": 1,
+            "encounter_locality": "ATLIN",
+            "location_approximate": 1,
+            "encounter_media_reference": 0,
+            "attractant_ids": "17",
+            "attractant_names": "GARBAGE",
+            "attractant_colours": "#ff0000",
+            "media_name_icon": "mapicon-grizzly.png",
+            "species_id": 12,
+            "species_name": "GRIZZLY BEAR",
+            "species_mapicon_hotx": 16,
+            "species_mapicon_hoty": 16,
+            "timestamp_encounter_date": 1347829200,
+            "timestamp_now": 1560798098
+        }
+    ],
+    "total": 1,
+    "url": "/warp/service/map_read?sort=encounter_date+desc&filter=(encounter_species_id+%3D+3+OR+encounter_species_id+%3D+12)+AND+(location_approximate+%3D+0+OR+location_approximate+%3D+1+OR+encounter_media_reference+%3D+1)+AND+(encounter_date+%3E%3D+CAST(%272012-01-01+00%3A00%3A00%27+AS+DATETIME)+AND+encounter_date+%3C%3D+CAST(%272012-12-31+11%3A05%3A48%27+AS+DATETIME))&record=%7B%7D&_=1560794746910"
+}
