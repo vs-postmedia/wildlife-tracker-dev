@@ -1,0 +1,23 @@
+metro_van <- c(
+  'anmore',
+  'belcarra',
+  'bowen island',
+  'burnaby',
+  'coquitlam',
+  'Delta',
+  'electoral area a',
+  'langley',
+  'lions bay',
+  'maple ridge',
+  'new westminster',
+  'north Vvancouver',
+  'pitt meadows',
+  'port coquitlam',
+  'port moody',
+  'richmond',
+  'surrey',
+  'tsawwassen',
+  'vancouver',
+  'west vancouver',
+  'White Rock'
+)
