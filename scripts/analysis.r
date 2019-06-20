@@ -4,6 +4,7 @@ library(purrr)
 library(readxl)
 library(janitor)
 library(lubridate)
+library(readr)
 
 bcc_data <- read_xlsx('data/bc-conservation/tabula-predatorstatisticsblackbear.xlsx') %>% clean_names()
 # downloaded csv from warp map interface
@@ -30,6 +31,10 @@ bear_data <-warp_data %>%
   mutate(
     year = year(encounter_date),
     month = month(encounter_date, label = TRUE)
+  )
+metro_data <- bear_data %>% 
+  filter(
+    tolower(encounter_locality) %in% metro_van
   )
 
 # join so we can create lookup tables for encounter & outcome IDs
@@ -61,13 +66,13 @@ bear_data %>%
   count
 
 # by year
-by_year <- bear_data %>% 
+metro_by_year <- metro_data %>% 
   group_by(species_name, year) %>% 
   count %>% 
   arrange(-year)
 
 # by month
-by_month <- bear_data %>% 
+metro_by_month <- metro_data %>% 
   group_by(species_name, month) %>% 
   count
 
@@ -92,10 +97,7 @@ bear_data %>%
 
 
 # METRO by attractant
-metro_attr <- bear_data %>% 
-  filter(
-    tolower(encounter_locality) %in% metro_van
-  ) %>% 
+metro_attr <- metro_data %>% 
   group_by(encounter_locality, attractant_names) %>%
   summarize(
     total = n()
@@ -108,8 +110,66 @@ metro_attr <- bear_data %>%
   ) %>% 
   arrange(-total)
 
+# metro 2019 w/ average
+metro_monthly_w_average <- metro_data %>% 
+  filter(
+    year == 2019
+  ) %>% 
+  group_by(month) %>% 
+  summarize(
+    total_2019 = n()
+  ) %>% 
+  right_join(metro_monthly_avg, by = 'month')
   
+# metro averages
+metro_monthly_avg <- metro_data %>% 
+  group_by(month, year) %>% 
+  summarize(
+    total = n()
+  ) %>% 
+  group_by(month) %>% 
+  summarize(
+    avg = mean(total),
+    median = median(total)
+  )
 
+
+# muni 2019 w/ average
+muni_monthly_w_average <- metro_data %>% 
+  filter(
+    year == 2019
+  ) %>% 
+  group_by(encounter_locality, month) %>% 
+  summarize(
+    total_2019 = n()
+  ) %>% 
+  right_join(muni_monthly_avg, by = c('encounter_locality', 'month'))
+
+
+# metro muni breakdown averages
+muni_monthly_avg <- metro_data %>% 
+  group_by(encounter_locality, month, year) %>% 
+  summarize(
+    total = n()
+  ) %>% 
+  group_by(encounter_locality, month) %>% 
+  summarize(
+    monthly_total = sum(total),
+    average = round(mean(total), 1),
+    median = median(total)
+  )
+  
+# Garbage over tme
+garbage <- bear_data %>% 
+  filter(
+    grepl('17', attractant_ids),
+    year == 2019
+  ) %>% 
+  group_by(attractant_names, encounter_locality, year) %>% 
+  summarize(
+    total = n()
+  ) %>% 
+  arrange(-total)
 
 
 

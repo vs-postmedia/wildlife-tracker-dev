@@ -1,9 +1,21 @@
+library(dplyr)
 library(ggplot2)
 library(ggmap)
+library(sf)
 library(mapview)
 
+# draw them on a map
+as_tibble <- as_tibble(filter(metro_data, location_approximate == 0, year == 2019))
+as_sf <- st_as_sf(as_tibble, coords = c('encounter_lng', 'encounter_lat'), crs = 4326)
+# zol assigns col to legend, cex sizes circle by col value
+mapview(as_sf, 
+        # zcol = 'species_name'
+        zcol = 'year'
+)
+
+
 # setup Google API key (w/ sanity check)
-api = "AIzaSyBF-15yhpfXVwqu3VXQ2DA-DO-kTpC6hs8"
+api = ''
 register_google(key = api)
 ggmap_credentials()
 
@@ -28,7 +40,7 @@ gg +
 
 
 # BY YEAR
-by_year %>% 
+metro_by_year %>% 
   ggplot(aes(
     x = year, 
     y = n, 
@@ -39,21 +51,21 @@ by_year %>%
   # geom_line() + 
   theme_minimal() +
   theme(legend.position = 'top') +
-  labs(title = 'Encounters by year')
+  labs(title = 'Metro Encounters by year')
   
 
 # BY MONTH
-by_month %>% ggplot(aes(
+metro_by_month %>% ggplot(aes(
   x = month, 
   y = n, 
   fill = species_name  
   )) + 
   geom_bar(stat = 'identity') +
   theme_minimal() +
-  labs(title = 'Encounters by month')
+  labs(title = 'Metro Encounters by month')
 
 
-# BY MUNI/YEAR
+# BY MUNI/YEAR w/ garbage
 bear_data %>% 
   filter(
     tolower(encounter_locality) %in% metro_van
@@ -64,7 +76,7 @@ bear_data %>%
   ) %>%
   filter(
     attractant_names == 'GARBAGE'
-  ) %>% 
+  ) %>%
   ggplot(aes(
     x = year, 
     y = total,
@@ -72,9 +84,38 @@ bear_data %>%
     fill = species_name  
   )) + 
   geom_bar(stat = 'identity') +
-  # geom_line() + 
   facet_wrap(~encounter_locality) +
   theme_minimal() +
   theme(legend.position = 'top') +
-  labs(title = 'Encounters by year')
+  labs(title = 'Encounters by year b/c garbage')
+
+
+# metro by month w/ average
+muni_monthly_w_average %>% 
+  select(-monthly_total) %>% 
+  tidyr::gather(key = measure, value = value, total_2019:median) %>% 
+  ggplot(aes(
+    x = month,
+    y = value,
+    fill = measure
+  )) + 
+  geom_col(position = 'dodge') +
+  facet_wrap(~encounter_locality) +
+  theme_minimal() +
+  theme(legend.position = 'top') + 
+  labs(title = 'Encounters by month by metro')
+  
+  
+bear_data %>% 
+  filter(grepl('17', attractant_ids)) %>% 
+  ggplot(aes(
+    y = count(attractant_ids),
+    x = year
+  )) +
+  geom_line()
+  
+  
+  
+  
+
    
