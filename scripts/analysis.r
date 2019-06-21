@@ -1,14 +1,14 @@
 library(jsonlite)
 library(dplyr)
 library(purrr)
-library(readxl)
+
 library(janitor)
 library(lubridate)
 library(readr)
 
-bcc_data <- read_xlsx('data/bc-conservation/tabula-predatorstatisticsblackbear.xlsx') %>% clean_names()
+
 # downloaded csv from warp map interface
-# dl_data <- read.csv('data/encounter-267428-266283.csv') 
+# dl_data <- read_csv('data/warp_csv/warp-2019.csv')
 warp_json <- fromJSON('data/warp/warp-data-2019.json')
 
 # load in all the records in the warp-data folder
@@ -160,16 +160,77 @@ muni_monthly_avg <- metro_data %>%
   )
   
 # Garbage over tme
-garbage <- bear_data %>% 
+metro_garbage <- metro_data %>% 
   filter(
-    grepl('17', attractant_ids),
-    year == 2019
+    grepl('^17', attractant_ids)
   ) %>% 
   group_by(attractant_names, encounter_locality, year) %>% 
   summarize(
     total = n()
   ) %>% 
   arrange(-total)
+
+# wv_data <- 
+metro_data %>% 
+  filter(
+    encounter_locality == 'WEST VANCOUVER'
+  ) %>% 
+  group_by(attractant_names, year) %>% 
+  summarize(
+    total = n()
+  ) %>% 
+  mutate(
+    pct = total/sum(total) * 100
+  ) %>% 
+  filter(
+    attractant_names != 'NOT APPLICABLE',
+    total > 10
+  ) %>% 
+  arrange(-total) %>% 
+  ggplot(aes(
+    x = year,
+    y = total
+  )) + 
+  geom_col() + 
+  facet_wrap(~attractant_names) +
+  labs(title = 'Attractants by year in West Van')
+
+# Garbage by year in west 
+metro_data %>% 
+  filter(
+    encounter_locality == 'WEST VANCOUVER',
+    grepl('^17', attractant_ids)
+  ) %>% 
+  group_by(year) %>% 
+  summarize(
+    total = n()
+  ) %>% 
+  mutate(
+    pct = total/sum(total) * 100
+  ) %>% 
+  ggplot(aes(
+    x = year,
+    y = pct
+  )) + 
+  geom_col() + 
+  labs(title = 'Grabage by year in West Van')
+  
+
+# west van garbage
+wv_garbage <- metro_data %>% 
+  filter(
+    encounter_locality == 'WEST VANCOUVER'
+  ) %>% 
+  mutate(
+    garbage = as.character(grepl('^17', attractant_ids))
+  )
+
+
+1
+
+
+
+
 
 
 

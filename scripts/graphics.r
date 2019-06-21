@@ -92,6 +92,9 @@ bear_data %>%
 
 # metro by month w/ average
 muni_monthly_w_average %>% 
+  filter(
+    encounter_locality == 'WEST VANCOUVER'
+  ) %>% 
   select(-monthly_total) %>% 
   tidyr::gather(key = measure, value = value, total_2019:median) %>% 
   ggplot(aes(
@@ -105,14 +108,15 @@ muni_monthly_w_average %>%
   theme(legend.position = 'top') + 
   labs(title = 'Encounters by month by metro')
   
-  
-bear_data %>% 
-  filter(grepl('17', attractant_ids)) %>% 
+# Garbage over time
+metro_garbage %>% 
   ggplot(aes(
-    y = count(attractant_ids),
+    y = total,
     x = year
   )) +
-  geom_line()
+  facet_wrap(~encounter_locality) + 
+  geom_col() + 
+  labs(title = 'Attractant: Garbage per year')
   
   
   
